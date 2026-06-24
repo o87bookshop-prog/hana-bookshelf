@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanaの本棚 📚 (管理機能付き)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500;700&display=swap');
+        body { font-family: 'Kiwi Maru', sans-serif; background-color: #f7f4eb; }
+        .custom-card { background: #ffffff; border: 1px solid #e2ddd0; border-radius: 24px; }
+        .blob-input { border-radius: 16px 8px 16px 8px; background: #faf9f6; }
+        .hidden-section { display: none !important; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="text-stone-800 min-h-screen flex flex-col justify-between px-3 sm:px-4">
+
+    <header class="bg-white/80 py-6 md:py-8 px-4 text-center border-b border-stone-200/60 shadow-sm -mx-3 sm:-mx-4">
+        <h1 class="text-2xl md:text-4xl font-bold tracking-widest text-emerald-900">🌿 Hanaの本棚</h1>
+        <div class="max-w-2xl mx-auto mt-3 px-2">
+            <p class="text-xs md:text-base text-stone-700 leading-relaxed font-medium">
+                AIに聞けば選書もできちゃう時代。<br>
+                でも、私があがいたり悩んだりしながら生きてきた中で読んだ本から選ぶからこそ、あたたかみのある選書ができると自負しています。<br>
+                どうぞ、今のあなたのお悩みや関心ごとを、私に託してください。
+            </p>
+        </div>
+    </header>
+
+    <div id="authContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-5 md:p-8 custom-card shadow-xl">
+        <div id="signInSection">
+            <h2 class="text-xl font-bold text-center text-emerald-900 mb-6">サインイン</h2>
+            <form id="signInForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-emerald-800">メールアドレス</label>
+                    <input type="email" name="email" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-emerald-800">パスワード</label>
+                    <input type="password" name="password" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <button type="submit" id="signInBtn" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl shadow-md cursor-pointer hover:opacity-90">ログインする 🔑</button>
+            </form>
+            <p class="text-xs text-center mt-6 text-stone-500">はじめての方はこちら：<button onclick="toggleAuth(true)" class="text-emerald-700 underline font-bold cursor-pointer">新規アカウント作成</button></p>
+        </div>
+
+        <div id="signUpSection" class="hidden-section">
+            <h2 class="text-xl font-bold text-center text-emerald-900 mb-6">新規アカウント作成</h2>
+            <form id="signUpForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-emerald-800">メールアドレス</label>
+                    <input type="email" name="email" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1 text-emerald-800">パスワード</label>
+                    <input type="password" name="password" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:outline-none focus:border-emerald-500" placeholder="6文字以上">
+                </div>
+                <button type="submit" id="signUpBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-2xl shadow-md cursor-pointer hover:opacity-90">アカウントを作成する ✨</button>
+            </form>
+            <p class="text-xs text-center mt-6 text-stone-500">アカウントをお持ちの方：<button onclick="toggleAuth(false)" class="text-emerald-700 underline font-bold cursor-pointer">ログインはこちら</button></p>
+        </div>
+    </div>
+
+    <div id="menuContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl text-center hidden-section">
+        <h2 class="text-xl font-bold text-emerald-900 mb-2">ようこそ、Hanaの本棚へ</h2>
+        <p id="menuUserDisplay" class="text-xs text-stone-500 mb-6 font-medium break-all"></p>
+        
+        <div class="mb-6 text-left bg-stone-50 border border-stone-200/80 p-4 md:p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-emerald-900 mb-4 flex items-center justify-center border-b border-stone-200 pb-2">🌿 ご利用の流れ（カンタン3ステップ）</h3>
+            <div class="space-y-4 text-xs leading-relaxed text-stone-600">
+                <div class="flex items-start gap-3">
+                    <span class="flex-shrink-0 bg-emerald-700 text-white font-bold w-5 h-5 rounded-full flex items-center justify-center text-[10px] mt-0.5">1</span>
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm">チケットを購入する</h4>
+                        <p>下の<span class="text-orange-500 font-bold">オレンジのボタン</span>から外部ショップ（BASE）へ進み、選書チケット（1,500円）をご購入ください。</p>
+                    </div>
+                </div>
+                <div class="text-center text-stone-300 -my-2">▼</div>
+                <div class="flex items-start gap-3">
+                    <span class="flex-shrink-0 bg-emerald-700 text-white font-bold w-5 h-5 rounded-full flex items-center justify-center text-[10px] mt-0.5">2</span>
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm">ヒアリングに答える</h4>
+                        <p>購入完了画面やメールに表示される<span class="text-amber-800 font-bold">「注文番号（コード）」</span>をコピーして、下の<span class="text-rose-400 font-bold">ピンクのボタン</span>からヒアリングフォームにご回答ください。</p>
+                    </div>
+                </div>
+                <div class="text-center text-stone-300 -my-2">▼</div>
+                <div class="flex items-start gap-3">
+                    <span class="flex-shrink-0 bg-emerald-700 text-white font-bold w-5 h-5 rounded-full flex items-center justify-center text-[10px] mt-0.5">3</span>
+                    <div>
+                        <h4 class="font-bold text-stone-800 text-sm">選書結果が届く（約1週間）</h4>
+                        <p>あなたのお悩みや好みに合わせて、Hanaが心を込めて3冊を選書します。約1週間後に、この画面の「選書結果を見る」ボタンから確認できるようになります。のんびりお待ちくださいね ☕</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3.5">
+            <button onclick="showResultPage()" class="w-full py-3.5 px-4 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold rounded-2xl shadow-md cursor-pointer text-sm md:text-base">📖 あなたのための選書結果を見る</button>
+            <a href="https://o87bookshop.base.shop/" target="_blank" class="block w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-2xl shadow-md text-center text-sm md:text-base">💳 購入する（外部サイト）</a>
+            <button onclick="showFormPage()" class="w-full py-3.5 bg-gradient-to-r from-rose-400 to-pink-500 text-white font-bold rounded-2xl shadow-md text-center text-sm">📝 すでに購入済みで、ヒアリングに答える</button>
+        </div>
+    </div>
+
+    <div id="resultContainer" class="w-full max-w-3xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+        <div class="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
+            <h2 class="text-lg md:text-xl font-bold text-emerald-900">✨ あなたのために選んだ3冊</h2>
+            <button onclick="backToMenu()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 whitespace-nowrap">メニューへ戻る</button>
+        </div>
+        <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8"></div>
+        <div class="bg-amber-50/60 border border-amber-200/70 p-4 md:p-6 rounded-2xl mt-8">
+            <h3 class="font-bold text-sm text-amber-900 mb-3">💌 Hanaからのメッセージ</h3>
+            <p id="hanaMessage" class="text-sm text-stone-700 leading-relaxed whitespace-pre-wrap font-medium"></p>
+        </div>
+    </div>
+
+    <main id="formContainer" class="w-full max-w-xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-4 mb-6">
+            <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">1回 1,500円（あなたのための3冊）</span>
+            <button onclick="backToMenu()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50">戻る</button>
+        </div>
+        <form id="hearingForm" class="space-y-5">
+            <div>
+                <label class="block font-bold mb-1 text-sm text-amber-900">✦ ショップの「注文番号」を入力してください</label>
+                <input type="text" name="orderNumber" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="例: #12345678">
+            </div>
+            <div>
+                <label class="block font-bold mb-2 text-sm text-emerald-800">✦ 普段の読書量を教えてください</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                    <label class="flex items-center p-3 border-2 border-stone-200 rounded-xl bg-white cursor-pointer"><input type="radio" name="readingVolume" value="よく読んでいる" class="mr-2" checked> よく読んでいる</label>
+                    <label class="flex items-center p-3 border-2 border-stone-200 rounded-xl bg-white cursor-pointer"><input type="radio" name="readingVolume" value="まあまあ読んでいる" class="mr-2"> まあまあ読んでいる</label>
+                    <label class="flex items-center p-3 border-2 border-stone-200 rounded-xl bg-white cursor-pointer"><input type="radio" name="readingVolume" value="あまり読めていない" class="mr-2"> あまり読めていない</label>
+                    <label class="flex items-center p-3 border-2 border-stone-200 rounded-xl bg-white cursor-pointer"><input type="radio" name="readingVolume" value="全然読まない" class="mr-2"> 全然読まない</label>
+                </div>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 最近の悩みや関心は何ですか？</label>
+                <textarea name="concerns" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 好きなこと（趣味・特技）をエピソードとともに教えてください</label>
+                <textarea name="likes" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 苦手なことをエピソードとともに教えてください</label>
+                <textarea name="dislikes" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 好きな本があれば教えてください</label>
+                <input type="text" name="favoriteBooks" class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400">
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 今回、本に求めている役割は？</label>
+                <select name="role" class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 bg-white">
+                    <option value="前向きに、元気を一歩出したい">前向きに、元気を一歩出したい 🚀</option>
+                    <option value="とにかく今は優しく寄り添って、癒やしてほしい">とにかく今は優しく寄り添って、癒やしてほしい ☕</option>
+                    <option value="現実を忘れて、物語の世界に没頭したい">現実を忘れて、物語の世界に没頭したい 🌌</option>
+                    <option value="自分の知らない新しい視点や、知的な刺激がほしい">自分の知らない新しい視点や、知的な刺激がほしい 💡</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ その他、私に話しかけるように自由にどうぞ！</label>
+                <textarea name="message" rows="2" class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+            </div>
+            <button type="submit" id="submitBtn" class="w-full py-4 bg-gradient-to-r from-rose-400 to-orange-400 text-white font-bold rounded-2xl shadow-lg transform active:scale-95 transition-all duration-500 text-md tracking-wider cursor-pointer">この内容をHanaに託す 💌</button>
+        </form>
+    </main>
+
+    <main id="adminContainer" class="w-full max-w-6xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+        <div class="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
+            <h2 class="text-xl font-bold text-emerald-900 flex items-center gap-2">⚙️ Hanaの本棚 管理画面</h2>
+            <button onclick="location.reload()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50">ログアウト</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 border-r border-stone-200 pr-0 lg:pr-6">
+                <h3 class="font-bold text-emerald-800 mb-3 text-sm">📥 ヒアリング受付一覧</h3>
+                <div id="adminOrderList" class="space-y-3 max-h-[600px] overflow-y-auto pr-2"></div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div id="adminDetailPlaceholder" class="text-center py-20 text-stone-400 text-sm font-medium">
+                    左側の一覧から処理する注文を選択してください。
+                </div>
+                
+                <div id="adminDetailSection" class="hidden-section space-y-6">
+                    <div class="bg-stone-50 border border-stone-200 p-4 rounded-2xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 id="detailUserEmail" class="font-bold text-emerald-900 text-md break-all"></h4>
+                            <span id="detailStatus" class="text-xs font-bold px-2.5 py-1 rounded-full"></span>
+                        </div>
+                        <p id="detailOrderNumber" class="text-xs text-amber-800 font-bold mb-3"></p>
+                        <div id="detailContent" class="text-xs space-y-2 text-stone-700 font-medium"></div>
+                    </div>
+
+                    <form id="selectionForm" class="space-y-4">
+                        <h3 class="font-bold text-emerald-800 text-sm border-b border-stone-200 pb-1">📚 この方への選書を登録する</h3>
+                        <input type="hidden" id="selectionEmail" name="email">
+                        
+                        <div>
+                            <label class="block text-xs font-bold mb-1 text-stone-600">💌 Hanaからのメッセージ</label>
+                            <textarea id="selectionMsg" name="msg" rows="4" required class="w-full p-3 border border-stone-300 rounded-xl text-sm focus:outline-emerald-500" placeholder="選書への想いやメッセージを入力してください..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
+                                <span class="text-xs font-bold text-emerald-800 block">第1冊</span>
+                                <input type="text" id="isbn1" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(1)">
+                                <input type="text" id="t1" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="a1" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="c1" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                            </div>
+                            <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
+                                <span class="text-xs font-bold text-emerald-800 block">第2冊</span>
+                                <input type="text" id="isbn2" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(2)">
+                                <input type="text" id="t2" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="a2" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="c2" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                            </div>
+                            <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
+                                <span class="text-xs font-bold text-emerald-800 block">第3冊</span>
+                                <input type="text" id="isbn3" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(3)">
+                                <input type="text" id="t3" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="a3" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="text" id="c3" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="saveSelectionBtn" class="w-full py-3 bg-emerald-700 text-white font-bold rounded-xl shadow-md hover:bg-emerald-800 text-sm cursor-pointer">選書結果を登録・完了にする 🚀</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-6 text-xs text-stone-500 bg-white/60 border-t border-stone-200/50 -mx-3 sm:-mx-4">
+        © Hanaの本棚. All Rights Reserved.
+    </footer>
+
+    <script>
+        // === ⚠️ ここをご自身のSupabase情報に書き換えてください ⚠️ ===
+        const SUPABASE_URL = "https://urcqcckgcgmlohfwntxp.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_UEwLnzYaxwuunFPJSNYQLw_injP_j_C"; 
+
+        // Supabaseクライアントの初期化
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 管理者のメールアドレス
+        const ADMIN_EMAIL = "admin@example.com"; 
+
+        let loggedInEmail = "";
+        let currentOrders = []; // 管理画面用データストア
+
+        window.onload = function() {
+            document.getElementById('authContainer').classList.remove('hidden-section');
+        };
+
+        function toggleAuth(showSignUp) {
+            document.getElementById('signInSection').classList.toggle('hidden-section', showSignUp);
+            document.getElementById('signUpSection').classList.toggle('hidden-section', !showSignUp);
+        }
+
+        function backToMenu() {
+            document.getElementById('formContainer').classList.add('hidden-section');
+            document.getElementById('resultContainer').classList.add('hidden-section');
+            document.getElementById('menuContainer').classList.remove('hidden-section');
+        }
+
+        function showFormPage() {
+            document.getElementById('menuContainer').classList.add('hidden-section');
+            document.getElementById('formContainer').classList.remove('hidden-section');
+        }
+
+        // ユーザー選書結果取得 (Supabaseの 'selections' テーブルから取得)
+        async function showResultPage() {
+            document.getElementById('menuContainer').classList.add('hidden-section');
+            const grid = document.getElementById('booksGrid');
+            grid.innerHTML = '<p class="text-center col-span-1 sm:col-span-3 text-stone-500 py-12">Hanaの本棚から探しています... 📚</p>';
+            document.getElementById('hanaMessage').innerText = "読み込み中...";
+            document.getElementById('resultContainer').classList.remove('hidden-section');
+
+            try {
+                const { data, error } = await supabase
+                    .from('selections')
+                    .select('*')
+                    .eq('email', loggedInEmail)
+                    .maybeSingle(); // 1件だけ取得
+
+                if (error) throw error;
+
+                if (data) {
+                    document.getElementById('hanaMessage').innerText = data.msg;
+                    grid.innerHTML = "";
+                    
+                    // 3冊のデータを配列に整形してループ
+                    const books = [
+                        { title: data.t1, author: data.a1, cover: data.c1 },
+                        { title: data.t2, author: data.a2, cover: data.c2 },
+                        { title: data.t3, author: data.a3, cover: data.c3 }
+                    ];
+
+                    books.forEach((book, index) => {
+                        grid.insertAdjacentHTML('beforeend', `
+                            <div class="bg-stone-50 border border-stone-200 p-4 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                                <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md mb-3">第 ${index + 1} 冊</span>
+                                <img src="${book.cover || 'https://via.placeholder.com/128x176?text=No+Image'}" alt="書影" class="w-32 h-44 object-cover shadow-md rounded border border-stone-300 bg-white mb-4">
+                                <h4 class="font-bold text-sm text-stone-800 line-clamp-2 min-h-[2.5rem]">${book.title || "（未登録）"}</h4>
+                                <p class="text-xs text-stone-500 mt-1">${book.author || "（未登録）"}</p>
+                            </div>
+                        `);
+                    });
+                } else {
+                    grid.innerHTML = `<div class="text-center col-span-1 sm:col-span-3 py-12 text-stone-600 font-medium text-sm">☕ まだ選書結果が届いていないようです。</div>`;
+                    document.getElementById('hanaMessage').innerText = "ヒアリング回答後、Hanaが心を込めて選書中ですので、しばらくお待ちください。";
+                }
+            } catch (err) {
+                alert('データ取得失敗: ' + err.message);
+            }
+        }
+
+        // 会員登録 (Supabase Authの機能を使用)
+        document.getElementById('signUpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('signUpBtn');
+            btn.disabled = true; btn.innerText = '作成中... ✨';
+            const formData = new FormData(e.target);
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                });
+
+                if (error) throw error;
+
+                alert('アカウント作成リクエストが成功しました！確認メールが届いている場合はリンクをクリックしてください。');
+                document.getElementById('signUpForm').reset();
+                toggleAuth(false);
+            } catch (error) {
+                alert('エラー: ' + error.message);
+            } finally {
+                btn.disabled = false; btn.innerText = 'アカウントを作成する ✨';
+            }
+        });
+
+        // ログイン (Supabase Authの機能を使用)
+        document.getElementById('signInForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('signInBtn');
+            btn.disabled = true; btn.innerText = '認証中... 🔑';
+            const formData = new FormData(e.target);
+            const email = formData.get('email');
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: formData.get('password'),
+                });
+
+                if (error) throw error;
+
+                loggedInEmail = email;
+                document.getElementById('authContainer').classList.add('hidden-section');
+                
+                if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    showAdminPage();
+                } else {
+                    document.getElementById('menuUserDisplay').innerText = "ログイン中: " + email;
+                    document.getElementById('menuContainer').classList.remove('hidden-section');
+                }
+            } catch (error) {
+                alert('ログイン失敗: ' + error.message);
+            } finally {
+                btn.disabled = false; btn.innerText = 'ログインする 🔑';
+            }
+        });
+
+        // ヒアリング送信 (Supabaseの 'hearings' テーブルへデータをインサート)
+        document.getElementById('hearingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true; submitBtn.innerText = '届けています... 🚀';
+            const formData = new FormData(e.target);
+            
+            const insertData = {
+                reading_volume: formData.get('readingVolume'),
+                concerns: formData.get('concerns'),
+                likes: formData.get('likes'),
+                dislikes: formData.get('dislikes'),
+                favorite_books: formData.get('favoriteBooks') || '特になし',
+                role: formData.get('role'),
+                message: formData.get('message') || '特になし',
+                user_email: loggedInEmail,
+                order_number: formData.get('orderNumber'),
+                status: '未処理'
+            };
+
+            try {
+                const { error } = await supabase
+                    .from('hearings')
+                    .insert([insertData]);
+
+                if (error) throw error;
+
+                alert('お申し込みありがとうございました！大切な記憶とお悩み、受け取りました。選書をお楽しみに。');
+                document.getElementById('hearingForm').reset();
+                backToMenu();
+            } catch (error) {
+                alert('エラー: ' + error.message);
+            } finally {
+                submitBtn.disabled = false; submitBtn.innerText = 'この内容をHanaに託す 💌';
+            }
+        });
+
+        // ----------------------------------------------------
+        // 管理画面ロジック群
+        // ----------------------------------------------------
+        function showAdminPage() {
+            document.getElementById('adminContainer').classList.remove('hidden-section');
+            loadAdminOrders();
+        }
+
+        // 注文一覧をSupabaseから取得して描写
+        async function loadAdminOrders() {
+            const listContainer = document.getElementById('adminOrderList');
+            listContainer.innerHTML = '<p class="text-xs text-stone-500 p-2">注文データを読込中...</p>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('hearings')
+                    .select('*')
+                    .order('created_at', { ascending: false }); // 新しい順
+
+                if (error) throw error;
+
+                currentOrders = data;
+                listContainer.innerHTML = '';
+                
+                if (data.length === 0) {
+                    listContainer.innerHTML = '<p class="text-xs text-stone-500 p-2">届いているヒアリングはありません。</p>';
+                    return;
+                }
+
+                data.forEach((order, index) => {
+                    const isDone = order.status === "完了";
+                    const badgeColor = isDone ? "bg-stone-200 text-stone-600" : "bg-rose-100 text-rose-700";
+                    // 日付の簡易整形
+                    const dateStr = order.created_at ? order.created_at.substring(0,10) : "";
+                    
+                    listContainer.insertAdjacentHTML('beforeend', `
+                        <div onclick="selectOrder(${index})" class="p-3 border border-stone-200 rounded-xl bg-white hover:border-emerald-600 shadow-sm cursor-pointer transition-all">
+                            <div class="flex justify-between items-center text-[11px] mb-1">
+                                <span class="font-bold ${badgeColor} px-2 py-0.5 rounded">${order.status || "未処理"}</span>
+                                <span class="text-stone-400">${dateStr}</span>
+                            </div>
+                            <p class="text-xs font-bold text-stone-700 truncate">${order.user_email}</p>
+                            <p class="text-[11px] text-stone-500 truncate">注文: ${order.order_number}</p>
+                        </div>
+                    `);
+                });
+            } catch (error) {
+                alert("管理一覧取得失敗: " + error.message);
+            }
+        }
+
+        // 一覧から該当注文をタップした時
+        function selectOrder(index) {
+            const order = currentOrders[index];
+            document.getElementById('adminDetailPlaceholder').classList.add('hidden-section');
+            document.getElementById('adminDetailSection').classList.remove('hidden-section');
+            
+            // 入力フォーム初期化
+            document.getElementById('selectionForm').reset();
+            document.getElementById('selectionEmail').value = order.user_email;
+
+            // ステータスバッジ
+            const isDone = order.status === "完了";
+            const badge = document.getElementById('detailStatus');
+            badge.innerText = isDone ? "完了済" : "未処理";
+            badge.className = isDone ? "text-xs font-bold px-2.5 py-1 rounded-full bg-stone-200 text-stone-600" : "text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700";
+
+            // 詳細情報テキスト
+            document.getElementById('detailUserEmail').innerText = order.user_email;
+            document.getElementById('detailOrderNumber').innerText = "注文番号: " + order.order_number;
+            
+            document.getElementById('detailContent').innerHTML = `
+                <p><b>読書量:</b> ${order.reading_volume}</p>
+                <p class="whitespace-pre-wrap"><b>悩み・関心:</b> ${order.concerns}</p>
+                <p class="whitespace-pre-wrap"><b>好きなこと:</b> ${order.likes}</p>
+                <p class="whitespace-pre-wrap"><b>苦手なこと:</b> ${order.dislikes}</p>
+                <p><b>好きな本:</b> ${order.favorite_books}</p>
+                <p><b>本への役割:</b> ${order.role}</p>
+                <p class="whitespace-pre-wrap"><b>メッセージ:</b> ${order.message}</p>
+            `;
+        }
+
+        // ISBN入力時にオープンデータ（OpenBD等）から書籍情報を自動サーチ
+        // (GAS依存を無くすため、公開APIであるOpenBDを直接叩くように修正しました)
+        function fetchBook(bookNum) {
+            const isbn = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
+            if (!isbn) return;
+            
+            fetch(`https://api.openbd.jp/v1/get?isbn=${isbn}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data[0]) {
+                        const summary = data[0].summary;
+                        document.getElementById(`t${bookNum}`).value = summary.title || '';
+                        document.getElementById(`a${bookNum}`).value = summary.author || '';
+                        document.getElementById(`c${bookNum}`).value = summary.cover || '';
+                    } else {
+                        alert("書籍情報が見つかりませんでした。手動で入力してください。");
+                    }
+                }).catch(() => alert("書籍情報の取得に失敗しました。"));
+        }
+
+        // 選書結果の登録送信 (Supabaseの 'selections' テーブルへ保存 ＋ 'hearings' のステータスを完了に更新)
+        document.getElementById('selectionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveSelectionBtn');
+            btn.disabled = true; btn.innerText = '登録しています...';
+
+            const targetEmail = document.getElementById('selectionEmail').value;
+
+            const selectionData = {
+                email: targetEmail,
+                msg: document.getElementById('selectionMsg').value,
+                t1: document.getElementById('t1').value, a1: document.getElementById('a1').value, c1: document.getElementById('c1').value,
+                t2: document.getElementById('t2').value, a2: document.getElementById('a2').value, c2: document.getElementById('c2').value,
+                t3: document.getElementById('t3').value, a3: document.getElementById('a3').value, c3: document.getElementById('c3').value
+            };
+
+            try {
+                // 1. selections テーブルに結果を保存 (upsertで上書き可能に)
+                const { error: upsertError } = await supabase
+                    .from('selections')
+                    .upsert([selectionData], { onConflict: 'email' });
+
+                if (upsertError) throw upsertError;
+
+                // 2. hearings テーブルの該当ユーザーのステータスを「完了」に更新
+                const { error: updateError } = await supabase
+                    .from('hearings')
+                    .update({ status: '完了' })
+                    .eq('user_email', targetEmail);
+
+                if (updateError) throw updateError;
+
+                alert('選書登録が完了しました！');
+                loadAdminOrders(); // 一覧リロード
+                document.getElementById('adminDetailPlaceholder').classList.remove('hidden-section');
+                document.getElementById('adminDetailSection').classList.add('hidden-section');
+            } catch (error) {
+                alert('エラー: ' + error.message);
+            } finally {
+                btn.disabled = false; btn.innerText = '選書結果を登録・完了にする 🚀';
+            }
+        });
+    </script>
+</body>
+</html>
