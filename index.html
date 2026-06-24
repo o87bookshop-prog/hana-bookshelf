@@ -237,12 +237,12 @@
     </footer>
 
     <script>
-        // === ⚠️ ここをご自身のSupabase情報に書き換えてください ⚠️ ===
+        // === Supabase接続設定 ===
         const SUPABASE_URL = "https://urcqcckgcgmlohfwntxp.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_UEwLnzYaxwuunFPJSNYQLw_injP_j_C"; 
 
-        // Supabaseクライアントの初期化
-        const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // ⭕ 修正：重複宣言エラー（Identifier already declared）を防ぐため、オブジェクト名を変更して初期化
+        const supabaseApp = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // 管理者のメールアドレス
         const ADMIN_EMAIL = "o87.bookshop@gmail.com"; 
@@ -270,7 +270,7 @@
             document.getElementById('formContainer').classList.remove('hidden-section');
         }
 
-        // ユーザー選書結果取得 (Supabaseの 'selections' テーブルから取得)
+        // ユーザー選書結果取得
         async function showResultPage() {
             document.getElementById('menuContainer').classList.add('hidden-section');
             const grid = document.getElementById('booksGrid');
@@ -279,11 +279,11 @@
             document.getElementById('resultContainer').classList.remove('hidden-section');
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseApp
                     .from('selections')
                     .select('*')
                     .eq('email', loggedInEmail)
-                    .maybeSingle(); // 1件だけ取得
+                    .maybeSingle();
 
                 if (error) throw error;
 
@@ -291,7 +291,6 @@
                     document.getElementById('hanaMessage').innerText = data.msg;
                     grid.innerHTML = "";
                     
-                    // 3冊のデータを配列に整形してループ
                     const books = [
                         { title: data.t1, author: data.a1, cover: data.c1 },
                         { title: data.t2, author: data.a2, cover: data.c2 },
@@ -317,7 +316,7 @@
             }
         }
 
-        // 会員登録 (Supabase Authの機能を使用)
+        // 会員登録
         document.getElementById('signUpForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('signUpBtn');
@@ -325,14 +324,14 @@
             const formData = new FormData(e.target);
 
             try {
-                const { data, error } = await supabase.auth.signUp({
+                const { data, error } = await supabaseApp.auth.signUp({
                     email: formData.get('email'),
                     password: formData.get('password'),
                 });
 
                 if (error) throw error;
 
-                alert('アカウント作成リクエストが成功しました！確認メールが届いている場合はリンクをクリックしてください。');
+                alert('アカウント作成申請に成功しました！メールボックスを確認して認証リンクをクリックしてください。');
                 document.getElementById('signUpForm').reset();
                 toggleAuth(false);
             } catch (error) {
@@ -342,7 +341,7 @@
             }
         });
 
-        // ログイン (Supabase Authの機能を使用)
+        // ログイン
         document.getElementById('signInForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('signInBtn');
@@ -351,7 +350,7 @@
             const email = formData.get('email');
 
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabaseApp.auth.signInWithPassword({
                     email: email,
                     password: formData.get('password'),
                 });
@@ -374,7 +373,7 @@
             }
         });
 
-        // ヒアリング送信 (Supabaseの 'hearings' テーブルへデータをインサート)
+        // ヒアリング送信
         document.getElementById('hearingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
@@ -395,7 +394,7 @@
             };
 
             try {
-                const { error } = await supabase
+                const { error } = await supabaseApp
                     .from('hearings')
                     .insert([insertData]);
 
@@ -419,16 +418,15 @@
             loadAdminOrders();
         }
 
-        // 注文一覧をSupabaseから取得して描写
         async function loadAdminOrders() {
             const listContainer = document.getElementById('adminOrderList');
             listContainer.innerHTML = '<p class="text-xs text-stone-500 p-2">注文データを読込中...</p>';
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseApp
                     .from('hearings')
                     .select('*')
-                    .order('created_at', { ascending: false }); // 新しい順
+                    .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
@@ -443,7 +441,6 @@
                 data.forEach((order, index) => {
                     const isDone = order.status === "完了";
                     const badgeColor = isDone ? "bg-stone-200 text-stone-600" : "bg-rose-100 text-rose-700";
-                    // 日付の簡易整形
                     const dateStr = order.created_at ? order.created_at.substring(0,10) : "";
                     
                     listContainer.insertAdjacentHTML('beforeend', `
@@ -462,23 +459,19 @@
             }
         }
 
-        // 一覧から該当注文をタップした時
         function selectOrder(index) {
             const order = currentOrders[index];
             document.getElementById('adminDetailPlaceholder').classList.add('hidden-section');
             document.getElementById('adminDetailSection').classList.remove('hidden-section');
             
-            // 入力フォーム初期化
             document.getElementById('selectionForm').reset();
             document.getElementById('selectionEmail').value = order.user_email;
 
-            // ステータスバッジ
             const isDone = order.status === "完了";
             const badge = document.getElementById('detailStatus');
             badge.innerText = isDone ? "完了済" : "未処理";
             badge.className = isDone ? "text-xs font-bold px-2.5 py-1 rounded-full bg-stone-200 text-stone-600" : "text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700";
 
-            // 詳細情報テキスト
             document.getElementById('detailUserEmail').innerText = order.user_email;
             document.getElementById('detailOrderNumber').innerText = "注文番号: " + order.order_number;
             
@@ -493,7 +486,6 @@
             `;
         }
 
-        // ISBN入力時にオープンデータ（OpenBD等）から書籍情報を自動サーチ
         function fetchBook(bookNum) {
             const isbn = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
             if (!isbn) return;
@@ -512,7 +504,6 @@
                 }).catch(() => alert("書籍情報の取得に失敗しました。"));
         }
 
-        // 選書結果の登録送信 (Supabaseの 'selections' テーブルへ保存 ＋ 'hearings' のステータスを完了に更新)
         document.getElementById('selectionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('saveSelectionBtn');
@@ -529,15 +520,13 @@
             };
 
             try {
-                // 1. selections テーブルに結果を保存 (upsertで上書き可能に)
-                const { error: upsertError } = await supabase
+                const { error: upsertError } = await supabaseApp
                     .from('selections')
                     .upsert([selectionData], { onConflict: 'email' });
 
                 if (upsertError) throw upsertError;
 
-                // 2. hearings テーブルの該当ユーザーのステータスを「完了」に更新
-                const { error: updateError } = await supabase
+                const { error: updateError } = await supabaseApp
                     .from('hearings')
                     .update({ status: '完了' })
                     .eq('user_email', targetEmail);
@@ -545,7 +534,7 @@
                 if (updateError) throw updateError;
 
                 alert('選書登録が完了しました！');
-                loadAdminOrders(); // 一覧リロード
+                loadAdminOrders();
                 document.getElementById('adminDetailPlaceholder').classList.remove('hidden-section');
                 document.getElementById('adminDetailSection').classList.add('hidden-section');
             } catch (error) {
