@@ -242,7 +242,7 @@
         const SUPABASE_ANON_KEY = "sb_publishable_UEwLnzYaxwuunFPJSNYQLw_injP_j_C"; 
 
         // Supabaseクライアントの初期化
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // 管理者のメールアドレス
         const ADMIN_EMAIL = "o87.bookshop@gmail.com"; 
@@ -494,7 +494,6 @@
         }
 
         // ISBN入力時にオープンデータ（OpenBD等）から書籍情報を自動サーチ
-        // (GAS依存を無くすため、公開APIであるOpenBDを直接叩くように修正しました)
         function fetchBook(bookNum) {
             const isbn = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
             if (!isbn) return;
