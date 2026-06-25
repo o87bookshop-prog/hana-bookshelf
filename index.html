@@ -204,24 +204,24 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
                                 <span class="text-xs font-bold text-emerald-800 block">第1冊</span>
-                                <input type="text" id="isbn1" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(1)">
+                                <input type="text" id="isbn1" placeholder="ISBN (必須・13桁)" required class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(1)">
                                 <input type="text" id="t1" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
                                 <input type="text" id="a1" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
-                                <input type="text" id="c1" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="hidden" id="c1">
                             </div>
                             <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
                                 <span class="text-xs font-bold text-emerald-800 block">第2冊</span>
-                                <input type="text" id="isbn2" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(2)">
+                                <input type="text" id="isbn2" placeholder="ISBN (必須・13桁)" required class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(2)">
                                 <input type="text" id="t2" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
                                 <input type="text" id="a2" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
-                                <input type="text" id="c2" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="hidden" id="c2">
                             </div>
                             <div class="p-3 border border-stone-200 rounded-xl bg-stone-50/50 space-y-2">
                                 <span class="text-xs font-bold text-emerald-800 block">第3冊</span>
-                                <input type="text" id="isbn3" placeholder="ISBN (自動取得用)" class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(3)">
+                                <input type="text" id="isbn3" placeholder="ISBN (必須・13桁)" required class="w-full p-2 border border-stone-300 rounded-lg text-xs" onchange="fetchBook(3)">
                                 <input type="text" id="t3" placeholder="書名" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
                                 <input type="text" id="a3" placeholder="著者" required class="w-full p-2 border border-stone-300 rounded-lg text-xs">
-                                <input type="text" id="c3" placeholder="カバー画像URL" class="w-full p-2 border border-stone-300 rounded-lg text-xs">
+                                <input type="hidden" id="c3">
                             </div>
                         </div>
 
@@ -252,14 +252,16 @@
         const SUPABASE_URL = "https://urcqcckgcgmlohfwntxp.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_UEwLnzYaxwuunFPJSNYQLw_injP_j_C"; 
 
-        // ⭕ 修正：重複宣言エラー（Identifier already declared）を防ぐため、オブジェクト名を変更して初期化
         const supabaseApp = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // 管理者のメールアドレス
         const ADMIN_EMAIL = "o87.bookshop@gmail.com"; 
 
+        // ⭕ 修正箇所：あなたのアソシエイトID（トラッキングID）を設定してください
+        const AMAZON_TRACKING_ID = "YOUR_TRACKING_ID-22"; 
+
         let loggedInEmail = "";
-        let currentOrders = []; // 管理画面用データストア
+        let currentOrders = []; 
 
         window.onload = function() {
             document.getElementById('authContainer').classList.remove('hidden-section');
@@ -279,6 +281,29 @@
         function showFormPage() {
             document.getElementById('menuContainer').classList.add('hidden-section');
             document.getElementById('formContainer').classList.remove('hidden-section');
+        }
+
+        // ISBN13桁をAmazonが識別できる10桁のASIN形式（及び簡易変換）にする汎用関数
+        function buildAmazonUrl(isbn13OrRaw) {
+            if (!isbn13OrRaw) return "https://www.amazon.co.jp";
+            // 数字以外（ハイフンなど）を完全除去
+            const cleanIsbn = isbn13OrRaw.toString().replace(/\D/g, "");
+            
+            let asin = cleanIsbn;
+            // 日本の書籍(9784...)の13桁ISBNを10桁ASINに簡易変換するロジック
+            if (cleanIsbn.length === 13 && cleanIsbn.startsWith("978")) {
+                // 978を取り除いた9桁を取得
+                const body = cleanIsbn.substr(3, 9);
+                // チェックデジットの計算
+                let sum = 0;
+                for (let i = 0; i < 9; i++) {
+                    sum += parseInt(body.charAt(i)) * (10 - i);
+                }
+                let checkDigit = (11 - (sum % 11)) % 11;
+                let checkDigitStr = checkDigit === 10 ? 'X' : checkDigit.toString();
+                asin = body + checkDigitStr;
+            }
+            return `https://www.amazon.co.jp/dp/${asin}/?tag=${AMAZON_TRACKING_ID}`;
         }
 
         // ユーザー選書結果取得
@@ -302,19 +327,28 @@
                     document.getElementById('hanaMessage').innerText = data.msg;
                     grid.innerHTML = "";
                     
+                    // c1, c2, c3 には新しく登録されたISBN番号が入る想定
                     const books = [
-                        { title: data.t1, author: data.a1, cover: data.c1 },
-                        { title: data.t2, author: data.a2, cover: data.c2 },
-                        { title: data.t3, author: data.a3, cover: data.c3 }
+                        { title: data.t1, author: data.a1, isbn: data.c1 },
+                        { title: data.t2, author: data.a2, isbn: data.c2 },
+                        { title: data.t3, author: data.a3, isbn: data.c3 }
                     ];
 
                     books.forEach((book, index) => {
+                        // アフィリエイトリンクの生成
+                        const amazonUrl = buildAmazonUrl(book.isbn);
+
                         grid.insertAdjacentHTML('beforeend', `
-                            <div class="bg-stone-50 border border-stone-200 p-4 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                                <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md mb-3">第 ${index + 1} 冊</span>
-                                <img src="${book.cover || 'https://via.placeholder.com/128x176?text=No+Image'}" alt="書影" class="w-32 h-44 object-cover shadow-md rounded border border-stone-300 bg-white mb-4">
-                                <h4 class="font-bold text-sm text-stone-800 line-clamp-2 min-h-[2.5rem]">${book.title || "（未登録）"}</h4>
-                                <p class="text-xs text-stone-500 mt-1">${book.author || "（未登録）"}</p>
+                            <div class="bg-stone-50 border border-stone-200 p-5 rounded-2xl flex flex-col justify-between text-center shadow-sm min-h-[280px]">
+                                <div class="flex flex-col items-center">
+                                    <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md mb-4">第 ${index + 1} 冊</span>
+                                    <div class="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-full flex items-center justify-center text-2xl mb-4 shadow-inner">📖</div>
+                                    <h4 class="font-bold text-sm text-stone-800 line-clamp-2 mb-1">${book.title || "（未登録）"}</h4>
+                                    <p class="text-xs text-stone-500 mb-4">${book.author || "（未登録）"}</p>
+                                </div>
+                                <a href="${amazonUrl}" target="_blank" rel="noopener noreferrer" class="block w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs rounded-xl shadow-md text-center hover:opacity-90 transition-all">
+                                    Amazonで詳細を見る ↗
+                                </a>
                             </div>
                         `);
                     });
@@ -498,19 +532,21 @@
         }
 
         function fetchBook(bookNum) {
-            const isbn = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
-            if (!isbn) return;
+            const isbnInput = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
+            if (!isbnInput) return;
             
-            fetch(`https://api.openbd.jp/v1/get?isbn=${isbn}`)
+            // 隠し要素のc1,c2,c3(画像URL用だったカラム)にISBNの値をあらかじめ代入
+            document.getElementById(`c${bookNum}`).value = isbnInput;
+            
+            fetch(`https://api.openbd.jp/v1/get?isbn=${isbnInput}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && data[0]) {
                         const summary = data[0].summary;
                         document.getElementById(`t${bookNum}`).value = summary.title || '';
                         document.getElementById(`a${bookNum}`).value = summary.author || '';
-                        document.getElementById(`c${bookNum}`).value = summary.cover || '';
                     } else {
-                        alert("書籍情報が見つかりませんでした。手動で入力してください。");
+                        alert("書籍情報が見つかりませんでした。手動でタイトルと著者を入力してください。（ISBNはそのまま保存されます）");
                     }
                 }).catch(() => alert("書籍情報の取得に失敗しました。"));
         }
@@ -522,13 +558,20 @@
 
             const targetEmail = document.getElementById('selectionEmail').value;
 
+            // c1, c2, c3 に本の画像URLではなくISBNの数値を代入して送る
             const selectionData = {
                 email: targetEmail,
                 msg: document.getElementById('selectionMsg').value,
-                t1: document.getElementById('t1').value, a1: document.getElementById('a1').value, c1: document.getElementById('c1').value,
-                t2: document.getElementById('t2').value, a2: document.getElementById('a2').value, c2: document.getElementById('c2').value,
-                t3: document.getElementById('t3').value, a3: document.getElementById('a3').value, c3: document.getElementById('c3').value
+                t1: document.getElementById('t1').value, a1: document.getElementById('a1').value, c1: document.getElementById('c1').value || document.getElementById('isbn1').value.trim().replace(/-/g, ""),
+                t2: document.getElementById('t2').value, a2: document.getElementById('a2').value, c2: document.getElementById('c2').value || document.getElementById('isbn2').value.trim().replace(/-/g, ""),
+                t3: document.getElementById('t3').value, a3: document.getElementById('a3').value, c3: document.getElementById('c3').value || document.getElementById('isbn3').value.trim().replace(/-/g, "")
             };
+
+            if(!selectionData.c1 || !selectionData.c2 || !selectionData.c3) {
+                alert("すべての本でISBNの入力が必要です。");
+                btn.disabled = false; btn.innerText = '選書結果を登録・完了にする 🚀';
+                return;
+            }
 
             try {
                 const { error: upsertError } = await supabaseApp
