@@ -27,7 +27,37 @@
         </div>
     </header>
 
-    <div id="authContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-5 md:p-8 custom-card shadow-xl">
+    <div id="homeContainer" class="w-full max-w-2xl mx-auto my-6 md:my-12 p-6 md:p-10 custom-card shadow-xl space-y-8">
+        <div class="text-center space-y-3">
+            <h2 class="text-xl md:text-2xl font-bold text-emerald-900">あなたに寄り添う、特別な1冊を。</h2>
+            <p class="text-xs md:text-sm text-stone-600 leading-relaxed">
+                日常のいそがしさから少しだけ離れて、あなたの心に深く染み渡る本と出会ってみませんか？<br>
+                じっくりとお話を伺い、あなたのためだけの3冊を選書いたします。
+            </p>
+            <div class="pt-2">
+                <button onclick="navToAuth()" class="py-3 px-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl shadow-md hover:opacity-90 transition-all text-sm md:text-base">
+                    ログイン / 新規登録して進む 🔑
+                </button>
+            </div>
+        </div>
+
+        <hr class="border-stone-200">
+
+        <div class="space-y-4">
+            <h3 class="text-md md:text-lg font-bold text-emerald-800 text-center flex items-center justify-center gap-1">
+                💬 届いたお客様からの声
+            </h3>
+            <div id="homeVoiceList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-center text-xs text-stone-400 col-span-2 py-4">お声を読み込み中... ☕</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="authContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-5 md:p-8 custom-card shadow-xl hidden-section">
+        <div class="mb-4">
+            <button onclick="navToHome()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1 rounded-full hover:bg-stone-50">← ホームへ戻る</button>
+        </div>
+        
         <div id="signInSection">
             <h2 class="text-xl font-bold text-center text-emerald-900 mb-6">サインイン</h2>
             <form id="signInForm" class="space-y-4">
@@ -123,6 +153,7 @@
                 <label class="block font-bold mb-1 text-sm text-amber-900">✦ ショップの「注文番号」を入力してください</label>
                 <input type="text" name="orderNumber" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="例: #12345678">
             </div>
+
             <div>
                 <label class="block font-bold mb-2 text-sm text-emerald-800">✦ 普段の読書量を教えてください</label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
@@ -132,10 +163,17 @@
                     <label class="flex items-center p-3 border-2 border-stone-200 rounded-xl bg-white cursor-pointer"><input type="radio" name="readingVolume" value="全然読まない" class="mr-2"> 全然読まない</label>
                 </div>
             </div>
+
             <div>
-                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 最近の悩みや関心は何ですか？</label>
-                <textarea name="concerns" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 今の自分を形容詞で表すと？</label>
+                <input type="text" name="currentSelf" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="例：いそがしい、のんびり、模索中、など自由に入力してください">
             </div>
+
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 予定のないお休みの日、何をする？</label>
+                <textarea name="freeDay" rows="2" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="過ごし方や、よく行く場所などを教えてください"></textarea>
+            </div>
+
             <div>
                 <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 好きなこと（趣味・特技）をエピソードとともに教えてください</label>
                 <textarea name="likes" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
@@ -144,10 +182,26 @@
                 <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 苦手なことをエピソードとともに教えてください</label>
                 <textarea name="dislikes" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
             </div>
+
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 最近、もっとも心が動いた出来事は？</label>
+                <textarea name="movedEvent" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="嬉しかったこと、悲しかったこと、感動したことなど"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 最近の悩みや関心は何ですか？</label>
+                <textarea name="concerns" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400"></textarea>
+            </div>
             <div>
                 <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 好きな本があれば教えてください</label>
                 <input type="text" name="favoriteBooks" class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400">
             </div>
+
+            <div>
+                <label class="block font-bold mb-1 text-sm text-emerald-800">✦ こうなりたい自分を教えてください。</label>
+                <textarea name="idealSelf" rows="3" required class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 placeholder-stone-400" placeholder="理想の姿や、これからやってみたいことなど"></textarea>
+            </div>
+
             <div>
                 <label class="block font-bold mb-1 text-sm text-emerald-800">✦ 今回、本に求めている役割は？</label>
                 <select name="role" class="w-full p-3 border-2 border-stone-200 blob-input text-sm focus:border-emerald-500 bg-white">
@@ -172,9 +226,26 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-1 border-r border-stone-200 pr-0 lg:pr-6">
-                <h3 class="font-bold text-emerald-800 mb-3 text-sm">📥 ヒアリング受付一覧</h3>
-                <div id="adminOrderList" class="space-y-3 max-h-[600px] overflow-y-auto pr-2"></div>
+            <div class="lg:col-span-1 border-r border-stone-200 pr-0 lg:pr-6 space-y-6">
+                <div>
+                    <h3 class="font-bold text-emerald-800 mb-3 text-sm">📥 ヒアリング受付一覧</h3>
+                    <div id="adminOrderList" class="space-y-3 max-h-[350px] overflow-y-auto pr-2"></div>
+                </div>
+                
+                <div class="border-t border-stone-200 pt-4">
+                    <h3 class="font-bold text-emerald-800 mb-3 text-sm">💬 お客様の声の投稿・管理</h3>
+                    <form id="adminVoiceForm" class="space-y-3 bg-stone-50 p-3 rounded-xl border border-stone-200">
+                        <div>
+                            <label class="block text-[11px] font-bold text-stone-600 mb-1">お名前・ニックネーム</label>
+                            <input type="text" id="voiceName" required class="w-full p-2 border border-stone-300 rounded-lg text-xs" placeholder="例：A様、ひまり様">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-stone-600 mb-1">お声の内容</label>
+                            <textarea id="voiceContent" rows="3" required class="w-full p-2 border border-stone-300 rounded-lg text-xs" placeholder="素敵な感想文などを入力してください..."></textarea>
+                        </div>
+                        <button type="submit" id="voiceSubmitBtn" class="w-full py-2 bg-teal-600 text-white font-bold rounded-lg text-xs shadow hover:bg-teal-700">ホーム画面へお声を掲載する ✨</button>
+                    </form>
+                </div>
             </div>
 
             <div class="lg:col-span-2">
@@ -257,15 +328,28 @@
         // 管理者のメールアドレス
         const ADMIN_EMAIL = "o87.bookshop@gmail.com"; 
 
-        // ⭕ 修正箇所：あなたのアソシエイトID（トラッキングID）を設定してください
+        // アソシエイトID（トラッキングID）
         const AMAZON_TRACKING_ID = "o87diary-22"; 
 
         let loggedInEmail = "";
         let currentOrders = []; 
 
+        // 初回ロード時はホーム画面を表示
         window.onload = function() {
-            document.getElementById('authContainer').classList.remove('hidden-section');
+            document.getElementById('homeContainer').classList.remove('hidden-section');
+            loadCustomerVoices(); // お客様の声を読み込み
         };
+
+        // 画面遷移用関数
+        function navToAuth() {
+            document.getElementById('homeContainer').classList.add('hidden-section');
+            document.getElementById('authContainer').classList.remove('hidden-section');
+        }
+
+        function navToHome() {
+            document.getElementById('authContainer').classList.add('hidden-section');
+            document.getElementById('homeContainer').classList.remove('hidden-section');
+        }
 
         function toggleAuth(showSignUp) {
             document.getElementById('signInSection').classList.toggle('hidden-section', showSignUp);
@@ -283,18 +367,47 @@
             document.getElementById('formContainer').classList.remove('hidden-section');
         }
 
-        // ISBN13桁をAmazonが識別できる10桁のASIN形式（及び簡易変換）にする汎用関数
+        // お客様の声を読み込んでホーム画面に表示する
+        async function loadCustomerVoices() {
+            const voiceList = document.getElementById('homeVoiceList');
+            try {
+                const { data, error } = await supabaseApp
+                    .from('customer_voices')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    voiceList.innerHTML = `
+                        <div class="bg-white/50 p-4 rounded-xl border border-stone-200/60 text-center col-span-2 text-stone-500 text-xs">
+                            これからたくさんのあたたかいお声を届けてまいります。
+                        </div>`;
+                    return;
+                }
+
+                voiceList.innerHTML = '';
+                data.forEach(voice => {
+                    voiceList.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white/80 p-4 rounded-xl border border-stone-200/60 shadow-sm flex flex-col justify-between">
+                            <p class="text-xs text-stone-700 italic leading-relaxed mb-3">“ ${voice.content} ”</p>
+                            <span class="text-[11px] font-bold text-emerald-800 self-end">— ${voice.name}</span>
+                        </div>
+                    `);
+                });
+            } catch (err) {
+                console.error("お客様の声の取得に失敗:", err.message);
+                voiceList.innerHTML = '<p class="text-center text-xs text-stone-400 col-span-2">現在、お声を読み込めません。</p>';
+            }
+        }
+
+        // ISBN13桁をAmazonリンクにする汎用関数
         function buildAmazonUrl(isbn13OrRaw) {
             if (!isbn13OrRaw) return "https://www.amazon.co.jp";
-            // 数字以外（ハイフンなど）を完全除去
             const cleanIsbn = isbn13OrRaw.toString().replace(/\D/g, "");
-            
             let asin = cleanIsbn;
-            // 日本の書籍(9784...)の13桁ISBNを10桁ASINに簡易変換するロジック
             if (cleanIsbn.length === 13 && cleanIsbn.startsWith("978")) {
-                // 978を取り除いた9桁を取得
                 const body = cleanIsbn.substr(3, 9);
-                // チェックデジットの計算
                 let sum = 0;
                 for (let i = 0; i < 9; i++) {
                     sum += parseInt(body.charAt(i)) * (10 - i);
@@ -327,7 +440,6 @@
                     document.getElementById('hanaMessage').innerText = data.msg;
                     grid.innerHTML = "";
                     
-                    // c1, c2, c3 には新しく登録されたISBN番号が入る想定
                     const books = [
                         { title: data.t1, author: data.a1, isbn: data.c1 },
                         { title: data.t2, author: data.a2, isbn: data.c2 },
@@ -335,9 +447,7 @@
                     ];
 
                     books.forEach((book, index) => {
-                        // アフィリエイトリンクの生成
                         const amazonUrl = buildAmazonUrl(book.isbn);
-
                         grid.insertAdjacentHTML('beforeend', `
                             <div class="bg-stone-50 border border-stone-200 p-5 rounded-2xl flex flex-col justify-between text-center shadow-sm min-h-[280px]">
                                 <div class="flex flex-col items-center">
@@ -418,7 +528,7 @@
             }
         });
 
-        // ヒアリング送信
+        // ヒアリング送信（拡張した項目に対応）
         document.getElementById('hearingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
@@ -427,10 +537,14 @@
             
             const insertData = {
                 reading_volume: formData.get('readingVolume'),
-                concerns: formData.get('concerns'),
+                current_self: formData.get('currentSelf'),     // 新規
+                free_day: formData.get('freeDay'),             // 新規
                 likes: formData.get('likes'),
                 dislikes: formData.get('dislikes'),
+                moved_event: formData.get('movedEvent'),       // 新規
+                concerns: formData.get('concerns'),
                 favorite_books: formData.get('favoriteBooks') || '特になし',
+                ideal_self: formData.get('idealSelf'),         // 新規
                 role: formData.get('role'),
                 message: formData.get('message') || '特になし',
                 user_email: loggedInEmail,
@@ -504,6 +618,7 @@
             }
         }
 
+        // 新しい順番に整列して詳細画面へ出力
         function selectOrder(index) {
             const order = currentOrders[index];
             document.getElementById('adminDetailPlaceholder').classList.add('hidden-section');
@@ -521,21 +636,52 @@
             document.getElementById('detailOrderNumber').innerText = "注文番号: " + order.order_number;
             
             document.getElementById('detailContent').innerHTML = `
-                <p><b>読書量:</b> ${order.reading_volume}</p>
-                <p class="whitespace-pre-wrap"><b>悩み・関心:</b> ${order.concerns}</p>
-                <p class="whitespace-pre-wrap"><b>好きなこと:</b> ${order.likes}</p>
-                <p class="whitespace-pre-wrap"><b>苦手なこと:</b> ${order.dislikes}</p>
-                <p><b>好きな本:</b> ${order.favorite_books}</p>
-                <p><b>本への役割:</b> ${order.role}</p>
-                <p class="whitespace-pre-wrap"><b>メッセージ:</b> ${order.message}</p>
+                <p><b>1. 読書量:</b> ${order.reading_volume}</p>
+                <p><b>2. 今の自分を形容詞で:</b> ${order.current_self || '（未回答）'}</p>
+                <p class="whitespace-pre-wrap"><b>3. 予定のないお休みの日:</b> ${order.free_day || '（未回答）'}</p>
+                <p class="whitespace-pre-wrap"><b>4. 好きなこと:</b> ${order.likes}</p>
+                <p class="whitespace-pre-wrap"><b>   苦手なこと:</b> ${order.dislikes}</p>
+                <p class="whitespace-pre-wrap"><b>5. 最近もっとも心が動いた出来事:</b> ${order.moved_event || '（未回答）'}</p>
+                <p class="whitespace-pre-wrap"><b>6. 悩み・関心:</b> ${order.concerns}</p>
+                <p><b>   好きな本:</b> ${order.favorite_books}</p>
+                <p class="whitespace-pre-wrap"><b>7. こうなりたい自分:</b> ${order.ideal_self || '（未回答）'}</p>
+                <p><b>8. 本への役割:</b> ${order.role}</p>
+                <p class="whitespace-pre-wrap"><b>   メッセージ:</b> ${order.message}</p>
             `;
         }
+
+        // 管理画面：お客様の声を新しくインプット・登録する処理
+        document.getElementById('adminVoiceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const vBtn = document.getElementById('voiceSubmitBtn');
+            vBtn.disabled = true; vBtn.innerText = 'お声を掲載中...';
+
+            const voiceData = {
+                name: document.getElementById('voiceName').value,
+                content: document.getElementById('voiceContent').value
+            };
+
+            try {
+                const { error } = await supabaseApp
+                    .from('customer_voices')
+                    .insert([voiceData]);
+
+                if (error) throw error;
+
+                alert('お客様の声を新しく登録しました！ホーム画面に反映されます。');
+                document.getElementById('adminVoiceForm').reset();
+                loadCustomerVoices(); // ホーム画面側の一覧（裏データ）を更新
+            } catch (err) {
+                alert('登録に失敗しました: ' + err.message);
+            } finally {
+                vBtn.disabled = false; vBtn.innerText = 'ホーム画面へお声を掲載する ✨';
+            }
+        });
 
         function fetchBook(bookNum) {
             const isbnInput = document.getElementById(`isbn${bookNum}`).value.trim().replace(/-/g, "");
             if (!isbnInput) return;
             
-            // 隠し要素のc1,c2,c3(画像URL用だったカラム)にISBNの値をあらかじめ代入
             document.getElementById(`c${bookNum}`).value = isbnInput;
             
             fetch(`https://api.openbd.jp/v1/get?isbn=${isbnInput}`)
@@ -546,11 +692,12 @@
                         document.getElementById(`t${bookNum}`).value = summary.title || '';
                         document.getElementById(`a${bookNum}`).value = summary.author || '';
                     } else {
-                        alert("書籍情報が見つかりませんでした。手動でタイトルと著者を入力してください。（ISBNはそのまま保存されます）");
+                        alert("書籍情報が見つかりませんでした。手動で入力してください。");
                     }
                 }).catch(() => alert("書籍情報の取得に失敗しました。"));
         }
 
+        // 選書結果登録送信
         document.getElementById('selectionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('saveSelectionBtn');
@@ -558,7 +705,6 @@
 
             const targetEmail = document.getElementById('selectionEmail').value;
 
-            // c1, c2, c3 に本の画像URLではなくISBNの数値を代入して送る
             const selectionData = {
                 email: targetEmail,
                 msg: document.getElementById('selectionMsg').value,
