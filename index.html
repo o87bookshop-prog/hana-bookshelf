@@ -7,16 +7,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500;700&display=swap');
-        body { font-family: 'Kiwi Maru', sans-serif; background-color: #f7f4eb; }
+        
+        body { 
+            font-family: 'Kiwi Maru', sans-serif; 
+            background-color: #f7f4eb; 
+            position: relative;
+        }
+        
+        /* ホーム画面用の背景画像を設定するクラス */
+        body.has-bg::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; w: 100%; h: 100%;
+            z-index: -1;
+            
+            /* 👇 GitHubに格納した画像パスを指定しています */
+            background-image: url('bg-photo.jpg');
+            
+            /* 大きな1枚のイラストを画面全体に綺麗にフィットさせる設定 */
+            background-repeat: no-repeat; 
+            background-size: cover; 
+            background-position: center;
+            
+            /* ここでお好みの「うっすら度合い」に調整できます。
+               0.25（25%の濃さ）にしています。イラストをよりはっきり見せたい場合は0.4などに上げてください。
+            */
+            opacity: 0.25; 
+        }
+
         .custom-card { background: #ffffff; border: 1px solid #e2ddd0; border-radius: 24px; }
         .blob-input { border-radius: 16px 8px 16px 8px; background: #faf9f6; }
         .hidden-section { display: none !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="text-stone-800 min-h-screen flex flex-col justify-between px-3 sm:px-4">
+<body class="has-bg text-stone-800 min-h-screen flex flex-col justify-between px-3 sm:px-4">
 
-    <header class="bg-white/80 py-6 md:py-8 px-4 text-center border-b border-stone-200/60 shadow-sm -mx-3 sm:-mx-4">
+    <header class="bg-white/80 py-6 md:py-8 px-4 text-center border-b border-stone-200/60 shadow-sm -mx-3 sm:-mx-4 z-10">
         <h1 class="text-2xl md:text-4xl font-bold tracking-widest text-emerald-900">🌿 Hanaの本棚</h1>
         <div class="max-w-2xl mx-auto mt-3 px-2">
             <p class="text-xs md:text-base text-stone-700 leading-relaxed font-medium">
@@ -27,7 +54,7 @@
         </div>
     </header>
 
-    <div id="homeContainer" class="w-full max-w-2xl mx-auto my-6 md:my-12 p-6 md:p-10 custom-card shadow-xl space-y-12">
+    <div id="homeContainer" class="w-full max-w-2xl mx-auto my-6 md:my-12 p-6 md:p-10 custom-card shadow-xl space-y-12 z-10">
         
         <div class="text-center space-y-4">
             <h2 class="text-xl md:text-3xl font-bold text-emerald-900 tracking-wider">あなたに寄り添う、特別な1冊を。</h2>
@@ -55,7 +82,7 @@
                         <span class="text-lg">☕</span>
                         <h4>心の内をほどくカルテ</h4>
                     </div>
-                    <p class="text-stone-600 leading-relaxed text-xs">「今の自分を形容詞で表すと？」「苦手なことは？」など、あなたの輪狂を浮かび上がらせる丁寧な質問から、今のあなたに必要な本を導き出します。</p>
+                    <p class="text-stone-600 leading-relaxed text-xs">「今の自分を形容詞で表すと？」「苦手なことは？」など、あなたの輪郭を浮かび上がらせる丁寧な質問から、今のあなたに必要な本を導き出します。</p>
                 </div>
                 <div class="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100/70 space-y-2">
                     <div class="flex items-center gap-2 font-bold text-emerald-900">
@@ -87,7 +114,7 @@
             <div class="space-y-4 max-w-xl mx-auto">
                 <div class="border-b border-stone-200 pb-3">
                     <p class="font-bold text-emerald-900">Q. あまり本を読まないのですが、申し込んでも大丈夫ですか？</p>
-                    <p class="text-stone-600 mt-1 text-xs leading-relaxed">A. もちろんです！普段読まない方には、読みやすくて引き込まれる本を中心にセレクトします。カルテの読書量欄に「全然読まない」と素直に書いていただいて大丈夫です。</p>
+                    <p class="text-stone-600 mt-1 text-xs leading-relaxed">A. もちろんです！普段読まない方には、読みやすくて引き込まれる本を中心にセレクトします。カルテの読書量欄に「全然読まない」と素真に書いていただいて大丈夫です。</p>
                 </div>
                 <div class="border-b border-stone-200 pb-3">
                     <p class="font-bold text-emerald-900">Q. 選書された本はどのように手に入りますか？</p>
@@ -103,7 +130,7 @@
         </div>
     </div>
 
-    <div id="authContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-5 md:p-8 custom-card shadow-xl hidden-section">
+    <div id="authContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-5 md:p-8 custom-card shadow-xl hidden-section z-10">
         <div class="mb-4">
             <button onclick="navToHome()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1 rounded-full hover:bg-stone-50">← ホームへ戻る</button>
         </div>
@@ -141,7 +168,7 @@
         </div>
     </div>
 
-    <div id="menuContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl text-center hidden-section">
+    <div id="menuContainer" class="w-full max-w-md mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl text-center hidden-section z-10">
         <h2 class="text-xl font-bold text-emerald-900 mb-2">ようこそ、Hanaの本棚へ</h2>
         <p id="menuUserDisplay" class="text-xs text-stone-500 mb-4 font-medium break-all"></p>
         
@@ -208,7 +235,7 @@
         </div>
     </div>
 
-    <div id="resultContainer" class="w-full max-w-3xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+    <div id="resultContainer" class="w-full max-w-3xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section z-10">
         <div class="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
             <h2 class="text-lg md:text-xl font-bold text-emerald-900">✨ あなたのために選んだ3冊</h2>
             <button onclick="backToMenu()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 whitespace-nowrap">メニューへ戻る</button>
@@ -220,7 +247,7 @@
         </div>
     </div>
 
-    <main id="formContainer" class="w-full max-w-xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+    <main id="formContainer" class="w-full max-w-xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section z-10">
         <div class="flex justify-between items-center border-b border-stone-100 pb-4 mb-6">
             <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-md">1回 1,500円（あなたのための3冊）</span>
             <button onclick="backToMenu()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50">戻る</button>
@@ -296,7 +323,7 @@
         </form>
     </main>
 
-    <main id="adminContainer" class="w-full max-w-7xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section">
+    <main id="adminContainer" class="w-full max-w-7xl mx-auto my-6 md:my-12 p-4 md:p-8 custom-card shadow-xl hidden-section z-10">
         <div class="flex justify-between items-center border-b border-stone-200 pb-4 mb-6">
             <h2 class="text-xl font-bold text-emerald-900 flex items-center gap-2">⚙️ Hanaの本棚 管理画面</h2>
             <button onclick="location.reload()" class="text-xs font-bold text-stone-500 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50">ログアウト</button>
@@ -384,7 +411,7 @@
         </div>
     </main>
 
-    <footer class="text-center py-6 text-xs text-stone-500 bg-white/60 border-t border-stone-200/50 -mx-3 sm:-mx-4 flex flex-col items-center justify-center gap-2 mt-auto">
+    <footer class="text-center py-6 text-xs text-stone-500 bg-white/60 border-t border-stone-200/50 -mx-3 sm:-mx-4 flex flex-col items-center justify-center gap-2 mt-auto z-10">
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full text-center">
             <a href="https://o87bookshop.base.shop/law" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium text-stone-600 flex items-center justify-center gap-0.5">
                 特定商取引法に基づく表記 <span class="text-[10px] text-stone-400">↗</span>
@@ -413,6 +440,7 @@
         let currentOrders = []; 
 
         window.onload = function() {
+            document.body.classList.add('has-bg');
             document.getElementById('homeContainer').classList.remove('hidden-section');
             loadCustomerVoices();
         };
@@ -670,6 +698,7 @@
                 document.getElementById('authContainer').classList.add('hidden-section');
                 
                 if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    document.body.classList.remove('has-bg');
                     showAdminPage();
                 } else {
                     document.getElementById('menuUserDisplay').innerText = "ログイン中: " + email;
