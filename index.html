@@ -27,21 +27,80 @@
         </div>
     </header>
 
-    <div id="homeContainer" class="w-full max-w-2xl mx-auto my-6 md:my-12 p-6 md:p-10 custom-card shadow-xl space-y-8">
-        <div class="text-center space-y-3">
-            <h2 class="text-xl md:text-2xl font-bold text-emerald-900">あなたに寄り添う、特別な1冊を。</h2>
-            <p class="text-xs md:text-sm text-stone-600 leading-relaxed">
+    <div id="homeContainer" class="w-full max-w-2xl mx-auto my-6 md:my-12 p-6 md:p-10 custom-card shadow-xl space-y-12">
+        
+        <div class="text-center space-y-4">
+            <h2 class="text-xl md:text-3xl font-bold text-emerald-900 tracking-wider">あなたに寄り添う、特別な1冊を。</h2>
+            <p class="text-xs md:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto">
                 日常のいそがしさから少しだけ離れて、あなたの心に深く染み渡る本と出会ってみませんか？<br>
                 じっくりとお話を伺い、あなたのためだけの3冊を選書いたします。
             </p>
-            <div class="pt-2">
-                <button onclick="navToAuth()" class="py-3 px-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl shadow-md hover:opacity-90 transition-all text-sm md:text-base">
+            <div class="pt-4">
+                <button onclick="navToAuth()" class="py-4 px-10 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all text-sm md:text-base tracking-widest transform hover:-translate-y-0.5 duration-200">
                     ログイン / 新規登録して進む 🔑
                 </button>
+                <p class="text-[11px] text-stone-400 mt-2">※アカウント作成後、選書ヒアリングの入力が可能になります</p>
             </div>
         </div>
 
-        <hr class="border-stone-200">
+        <hr class="border-stone-200/60">
+
+        <div class="space-y-6">
+            <h3 class="text-md md:text-lg font-bold text-emerald-800 text-center flex items-center justify-center gap-1">
+                ✨ Hanaの本棚のこだわり
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
+                <div class="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100/70 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-emerald-900">
+                        <span class="text-lg">☕</span>
+                        <h4>心の内をほどくカルテ</h4>
+                    </div>
+                    <p class="text-stone-600 leading-relaxed text-xs">「今の自分を形容詞で表すと？」「苦手なことは？」など、あなたの輪郭を浮かび上がらせる丁寧な質問から、今のあなたに必要な本を導き出します。</p>
+                </div>
+                <div class="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100/70 space-y-2">
+                    <div class="flex items-center gap-2 font-bold text-emerald-900">
+                        <span class="text-lg">🌿</span>
+                        <h4>偶然の出会いを楽しむ</h4>
+                    </div>
+                    <p class="text-stone-600 leading-relaxed text-xs">自分で探すのとは違い、「あ、私いまこういう言葉を求めていたんだ」とハッとするような、本棚の奥から見つけてきたような意外な3冊をお届けします。</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-stone-200/60">
+
+        <div class="space-y-6">
+            <h3 class="text-md md:text-lg font-bold text-emerald-800 text-center flex items-center justify-center gap-1">
+                📚 例えば、こんな選書をお届けします
+            </h3>
+            <div class="space-y-4">
+                <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60 text-xs">
+                    <div class="font-bold text-emerald-900 mb-2.5 flex items-center gap-1.5 text-xs md:text-sm">
+                        <span class="bg-teal-700 text-white px-2 py-0.5 rounded text-[10px]">カルテの一例</span>
+                        「がんばりすぎて、心がカラカラになってしまった時」
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[11px] text-stone-700">
+                        <div class="bg-white p-2 rounded-xl border border-stone-100 shadow-sm flex flex-col justify-between">
+                            <span class="text-md mb-1">📖</span>
+                            <p class="font-bold line-clamp-1">心がほどけるエッセイ</p>
+                            <p class="text-[9px] text-stone-400 mt-0.5">ほっと一息つきたい夜に</p>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl border border-stone-100 shadow-sm flex flex-col justify-between">
+                            <span class="text-md mb-1">📖</span>
+                            <p class="font-bold line-clamp-1">静かな異国の物語</p>
+                            <p class="text-[9px] text-stone-400 mt-0.5">ここではないどこかへ</p>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl border border-stone-100 shadow-sm flex flex-col justify-between">
+                            <span class="text-md mb-1">📖</span>
+                            <p class="font-bold line-clamp-1">お守りのような詩集</p>
+                            <p class="text-[9px] text-stone-400 mt-0.5">言葉を優しくつづる</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-stone-200/60">
 
         <div class="space-y-4">
             <h3 class="text-md md:text-lg font-bold text-emerald-800 text-center flex items-center justify-center gap-1">
@@ -50,6 +109,30 @@
             <div id="homeVoiceList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <p class="text-center text-xs text-stone-400 col-span-2 py-4">お声を読み込み中... ☕</p>
             </div>
+        </div>
+
+        <hr class="border-stone-200/60">
+
+        <div class="space-y-4 text-xs md:text-sm">
+            <h3 class="text-md md:text-lg font-bold text-emerald-800 text-center flex items-center justify-center gap-1">
+                💡 よくあるご質問
+            </h3>
+            <div class="space-y-4 max-w-xl mx-auto">
+                <div class="border-b border-stone-200 pb-3">
+                    <p class="font-bold text-emerald-900">Q. あまり本を読まないのですが、申し込んでも大丈夫ですか？</p>
+                    <p class="text-stone-600 mt-1 text-xs leading-relaxed">A. もちろんです！普段読まない方には、読みやすくて引き込まれる本を中心にセレクトします。カルテの読書量欄に「全然読まない」と素直に書いていただいて大丈夫です。</p>
+                </div>
+                <div class="border-b border-stone-200 pb-3">
+                    <p class="font-bold text-emerald-900">Q. 選書された本はどのように手に入りますか？</p>
+                    <p class="text-stone-600 mt-1 text-xs leading-relaxed">A. 当サイトでは本のタイトルと、Hanaからの紹介レターをお届けします。結果画面のAmazonリンクからご購入いただけるほか、お近くの書店や図書館でも探していただけます（選書チケット代に書籍代は含まれません）。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center pt-2">
+            <button onclick="navToAuth()" class="py-3 px-8 bg-stone-700 text-white font-bold rounded-2xl shadow-md hover:bg-stone-800 transition-all text-xs md:text-sm tracking-wider">
+                アカウントを作成してHanaに相談してみる ✨
+            </button>
         </div>
     </div>
 
@@ -151,7 +234,7 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-stone-600 mb-0.5">レビューメッセージ</label>
-                    <textarea id="reviewContent" rows="2" required class="w-full p-2 border border-stone-300 rounded-lg text-xs bg-white focus:outline-none focus:border-emerald-500" placeholder="選書の感想やHanaへのメッセージをどうぞ..."></textarea>
+                    < Marquess id="reviewContent" rows="2" required class="w-full p-2 border border-stone-300 rounded-lg text-xs bg-white focus:outline-none focus:border-emerald-500" placeholder="選書の感想やHanaへのメッセージをどうぞ..."></textarea>
                 </div>
                 <button type="submit" id="reviewSubmitBtn" class="w-full py-2 bg-stone-700 text-white font-bold rounded-lg text-xs shadow hover:bg-stone-800">レビューを送信する 🕊️</button>
             </form>
@@ -334,7 +417,7 @@
         </div>
     </main>
 
-    <footer class="text-center py-6 text-xs text-stone-500 bg-white/60 border-t border-stone-200/50 -mx-3 sm:-mx-4 flex flex-col items-center justify-center gap-2">
+    <footer class="text-center py-6 text-xs text-stone-500 bg-white/60 border-t border-stone-200/50 -mx-3 sm:-mx-4 flex flex-col items-center justify-center gap-2 mt-auto">
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full text-center">
             <a href="https://o87bookshop.base.shop/law" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium text-stone-600 flex items-center justify-center gap-0.5">
                 特定商取引法に基づく表記 <span class="text-[10px] text-stone-400">↗</span>
@@ -405,7 +488,6 @@
 
                 if (error) throw error;
 
-                // ホーム画面の表示
                 if (!data || data.length === 0) {
                     voiceList.innerHTML = '<div class="bg-white/50 p-4 rounded-xl border border-stone-200/60 text-center col-span-2 text-stone-500 text-xs">お声を募集中です。</div>';
                     if(manageList) manageList.innerHTML = '<p class="text-stone-400">データなし</p>';
@@ -674,8 +756,8 @@
         function showAdminPage() {
             document.getElementById('adminContainer').classList.remove('hidden-section');
             loadAdminOrders();
-            loadCustomerVoices(); // 声の削除リストも生成
-            loadAdminReviews();  // レビュー一覧を読み込み
+            loadCustomerVoices(); 
+            loadAdminReviews();  
         }
 
         async function loadAdminOrders() {
